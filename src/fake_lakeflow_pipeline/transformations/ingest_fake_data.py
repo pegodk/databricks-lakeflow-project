@@ -3,11 +3,10 @@ Ingest data from custom Faker data source into bronze layer.
 """
 import dlt
 from pyspark.sql import SparkSession
-from pyspark.sql.datasource import DataSource, DataSourceReader
 from pyspark.sql.types import StructType
 from framework.config import Config
 from framework.utils import add_metadata_columns
-
+from utilities import my_utils
 
 # Configuration
 config = Config.from_spark_config()
