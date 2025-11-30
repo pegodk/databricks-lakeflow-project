@@ -8,6 +8,8 @@
     valid_acctbal: "c_acctbal IS NOT NULL"
   expectations_warn:
     valid_mktsegment: "c_mktsegment IN ('AUTOMOBILE', 'BUILDING', 'FURNITURE', 'HOUSEHOLD', 'MACHINERY')"
+  expectations_fail_update:
+    has_rows: "COUNT(*) > 0"
 
 - source: lineitem
   destination: lineitem
