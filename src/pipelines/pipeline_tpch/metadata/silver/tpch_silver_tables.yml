@@ -23,7 +23,7 @@
   expectations_fail_update:
     valid_discount: "l_discount >= 0 AND l_discount <= 1"
     valid_tax: "l_tax >= 0"
-    has_rows: "COUNT(*) > 0"
+    has_rows: "count > 0"
   expectations_warn:
     valid_dates: "l_shipdate >= l_commitdate"
 
