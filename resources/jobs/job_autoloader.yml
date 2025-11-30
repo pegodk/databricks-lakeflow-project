@@ -2,8 +2,8 @@
 
 resources:
   jobs:
-    autoloader_lakeflow_job:
-      name: autoloader_lakeflow_job
+    autoloader_job:
+      name: autoloader_job
 
       tasks:
         - task_key: create_fake_data
@@ -11,8 +11,8 @@ resources:
             notebook_path: ../../src/notebooks/create_fake_data_in_volume.py
             base_parameters:
               bronze_catalog: ${var.bronze_catalog}
-              bronze_schema: ${resources.schemas.autoloader_bronze_schema.name}
-              bronze_volume: ${resources.volumes.autoloader_landing_zone.name}
+              bronze_schema: ${resources.schemas.schema_autoloader_bronze.name}
+              bronze_volume: ${resources.volumes.volume_autoloader_landing_zone.name}
 
       environments:
         - environment_key: default

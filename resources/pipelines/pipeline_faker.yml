@@ -1,26 +1,25 @@
-# The pipeline for fake_lakeflow_pipeline
+# The pipeline for faker
 
 resources:
   pipelines:
-    fake_lakeflow_pipeline:
-      name: fake_lakeflow_pipeline
+    faker_pipeline:
+      name: faker_pipeline
       catalog: ${var.bronze_catalog}
-      schema: ${resources.schemas.fake_bronze_schema.name}
+      schema: ${resources.schemas.schema_faker_bronze.name}
       serverless: true
-      root_path: ../../src/fake_lakeflow_pipeline
+      root_path: ../../src/pipelines/pipeline_faker
 
       libraries:
         - glob:
             include: 
-              ../../src/fake_lakeflow_pipeline/**
+              ../../src/pipelines/pipeline_faker/transformations/**
 
       configuration:
         bronze_catalog: ${var.bronze_catalog}
-        bronze_schema: ${resources.schemas.fake_bronze_schema.name}
+        bronze_schema: ${resources.schemas.schema_faker_bronze.name}
 
       environment:
         dependencies:
           # Include the framework package and faker library
           - --editable ${workspace.file_path}
           - faker
-
