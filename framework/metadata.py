@@ -4,7 +4,6 @@ Metadata utilities for loading and validating table configurations.
 This module provides functions to load table configuration files and validate their schema.
 """
 
-import json
 from pathlib import Path
 from typing import List, Set
 
@@ -103,13 +102,13 @@ def validate_table_metadata(config: dict, filename: str = "") -> bool:
 
 def load_table_configs(config_dir: str, validate: bool = True) -> list:
     """
-    Load and merge all YAML or JSON configuration files from a directory.
+    Load and merge all YAML configuration files from a directory.
     Each file should contain a 'tables' key with a list of table configurations,
     or a list/single dictionary for backwards compatibility.
     Optionally validates the schema of each configuration entry.
     
     Args:
-        config_dir: Path to the directory containing configuration files (.yml, .yaml, or .json)
+        config_dir: Path to the directory containing configuration files (.yml or .yaml)
         validate: If True, validate schema of each config entry (default: True)
         
     Returns:
@@ -119,6 +118,9 @@ def load_table_configs(config_dir: str, validate: bool = True) -> list:
         ValueError: If validation is enabled and a config has invalid schema
         FileNotFoundError: If the config directory doesn't exist
     """
+    if not YAML_AVAILABLE:
+        raise ImportError("PyYAML is required to load YAML files. Install it with: pip install pyyaml")
+    
     config_dir = Path(config_dir)
     
     if not config_dir.exists():
@@ -129,10 +131,8 @@ def load_table_configs(config_dir: str, validate: bool = True) -> list:
     
     all_configs = []
     
-    # Find all config files (YAML and JSON)
-    yaml_files = sorted(list(config_dir.glob("*.yml")) + list(config_dir.glob("*.yaml")))
-    json_files = sorted(config_dir.glob("*.json"))
-    config_files = yaml_files + json_files
+    # Find all YAML config files
+    config_files = sorted(list(config_dir.glob("*.yml")) + list(config_dir.glob("*.yaml")))
     
     if not config_files:
         print(f"Warning: No configuration files found in {config_dir}")
@@ -141,12 +141,7 @@ def load_table_configs(config_dir: str, validate: bool = True) -> list:
     for config_file in config_files:
         try:
             with open(config_file, "r") as f:
-                if config_file.suffix in [".yml", ".yaml"]:
-                    if not YAML_AVAILABLE:
-                        raise ImportError("PyYAML is required to load YAML files. Install it with: pip install pyyaml")
-                    file_data = yaml.safe_load(f)
-                else:
-                    file_data = json.load(f)
+                file_data = yaml.safe_load(f)
             
             # Handle YAML structure with 'tables' key
             if isinstance(file_data, dict) and "tables" in file_data:
@@ -167,8 +162,8 @@ def load_table_configs(config_dir: str, validate: bool = True) -> list:
             # Add all configs from this file
             all_configs.extend(file_configs)
                 
-        except (json.JSONDecodeError, yaml.YAMLError) as e:
-            raise ValueError(f"Invalid format in file '{config_file.name}': {str(e)}")
+        except yaml.YAMLError as e:
+            raise ValueError(f"Invalid YAML format in file '{config_file.name}': {str(e)}")
         except Exception as e:
             raise RuntimeError(f"Error loading config file '{config_file.name}': {str(e)}")
     
